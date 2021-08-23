@@ -23,17 +23,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String cmd = "";
-  String? output = "";
+  String? cmd = "";
+  String? out = "";
   void httpCallFunction() async {
     var url = Uri.parse('http://13.233.143.214/cgi-bin/f.py?var=$cmd');
     var response = await http.get(url);
     if (response.statusCode == 200) {
       setState(() {
-        output = response.body;
+        out = response.body;
       });
     }
   }
+
+  List<BoxWidget> individual = [];
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +43,10 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(title: Text("Linux Terminal")),
       body: Container(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: individual),
             Row(
               children: [
                 Text("[root@localhost~] "),
@@ -62,15 +66,41 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 TextButton(
                     onPressed: () {
+                      print(cmd);
+                      print(out);
                       httpCallFunction();
+                      individual.add(BoxWidget(
+                        command: "$cmd",
+                        output: "$out",
+                      ));
                     },
                     child: Text("Press"))
               ],
             ),
-            Text("$output")
           ],
         ),
       ),
+    );
+  }
+}
+
+class BoxWidget extends StatelessWidget {
+  final String? command;
+  final String? output;
+  BoxWidget({this.command, this.output});
+
+  @override
+  Widget build(BuildContext context) {
+    print(command);
+    print(output);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [Text("[root@localhost~] "), Text("${this.command}")],
+        ),
+        Text("${this.output}")
+      ],
     );
   }
 }
