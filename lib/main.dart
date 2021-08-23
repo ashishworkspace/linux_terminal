@@ -25,15 +25,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String? cmd = "";
   String? out = "";
-  void httpCallFunction() async {
-    var url = Uri.parse('http://13.233.143.214/cgi-bin/f.py?var=$cmd');
-    var response = await http.get(url);
-    if (response.statusCode == 200) {
-      setState(() {
-        out = response.body;
-      });
-    }
-  }
 
   List<BoxWidget> individual = [];
 
@@ -65,16 +56,22 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 TextButton(
-                    onPressed: () {
-                      print(cmd);
-                      print(out);
-                      httpCallFunction();
-                      individual.add(BoxWidget(
-                        command: "$cmd",
-                        output: "$out",
-                      ));
-                    },
-                    child: Text("Press"))
+                    child: Text("Press"),
+                    onPressed: () async {
+                      var url = Uri.parse(
+                          'http://13.233.143.214/cgi-bin/f.py?var=$cmd');
+                      var response = await http.get(url);
+                      if (response.statusCode == 200) {
+                        setState(() {
+                          out = response.body;
+                        });
+
+                        individual.add(BoxWidget(
+                          command: "$cmd",
+                          output: "$out",
+                        ));
+                      }
+                    })
               ],
             ),
           ],
